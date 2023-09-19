@@ -1,8 +1,3 @@
-/**
- * @author Luuxis
- * @license CC-BY-NC 4.0 - https://creativecommons.org/licenses/by-nc/4.0/
- */
-
 'use strict';
 
 // libs 
@@ -14,6 +9,7 @@ import { config, logger, changePanel, database, addAccount, accountSelect } from
 import Login from './panels/login.js';
 import Home from './panels/home.js';
 import Settings from './panels/settings.js';
+import skin from './panels/panelSkin.js';
 
 class Launcher {
     async init() {
@@ -23,7 +19,7 @@ class Launcher {
         this.config = await config.GetConfig().then(res => res);
         this.news = await config.GetNews().then(res => res);
         this.database = await new database().init();
-        this.createPanels(Login, Home, Settings);
+        this.createPanels(Login, Home, skin, Settings);
         this.getaccounts();
     }
 
@@ -40,20 +36,6 @@ class Launcher {
         console.log("Initializing Frame...")
         document.querySelector(".frame").classList.toggle("hide")
         document.querySelector(".dragbar").classList.toggle("hide")
-
-        document.querySelector("#minimize").addEventListener("click", () => {
-            ipcRenderer.send("main-window-minimize");
-        });
-
-        let maximized = false;
-        let maximize = document.querySelector("#maximize")
-        maximize.addEventListener("click", () => {
-            if (maximized) ipcRenderer.send("main-window-maximize")
-            else ipcRenderer.send("main-window-maximize");
-            maximized = !maximized
-            maximize.classList.toggle("icon-maximize")
-            maximize.classList.toggle("icon-restore-down")
-        });
 
         document.querySelector("#close").addEventListener("click", () => {
             ipcRenderer.send("main-window-close");
@@ -102,11 +84,17 @@ class Launcher {
                         name: refresh.name,
                         refresh_token: refresh.refresh_token,
                         user_properties: refresh.user_properties,
-                        meta: refresh.meta
+                        meta: {
+                            type: refresh.meta.type,
+                            xuid: refresh.meta.xuid,
+                            demo: refresh.meta.demo
+                        }
                     }
 
                     refresh_profile = {
-                        uuid: refresh.uuid
+                        uuid: refresh.uuid,
+                        skins: refresh.profile.skins || [],
+                        capes: refresh.profile.capes || [],
                     }
 
                     this.database.update(refresh_accounts, 'accounts');
@@ -114,7 +102,7 @@ class Launcher {
                     addAccount(refresh_accounts);
                     if (account.uuid === selectaccount) accountSelect(refresh.uuid)
                 } else if (account.meta.type === 'Mojang') {
-                    if (!account.meta.online) {
+                    if (account.meta.offline) {
                     console.log(`Initializing Crack account ${account.name}...`);
                         addAccount(account);
                         if (account.uuid === selectaccount) accountSelect(account.uuid)
@@ -160,11 +148,6 @@ class Launcher {
                     if (account.uuid === selectaccount) this.database.update({ uuid: "1234" }, 'accounts-selected')
                 }
             }
-
-
-
-
-            
             if (!(await this.database.get('1234', 'accounts-selected')).value.selected) {
                 let uuid = (await this.database.getAll('accounts'))[0]?.value?.uuid
                 if (uuid) {

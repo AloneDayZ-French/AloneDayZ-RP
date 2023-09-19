@@ -1,11 +1,11 @@
 {
-    "name": "Selvania-Launcher",
-    "preductname": "Selvania Launcher",
-    "version": "1.3.3",
-    "description": "Launcher Mincraft custom (crack, premium)",
+    "name": "AloneDayZ-RP",
+    "preductname": "AloneDayZ-RP",
+    "version": "1.0.1",
+    "description": "Launcher officiel",
     "main": "src/app.js",
-    "author": "Luuxis",
-    "url": "http://launcher.luuxis.fr/launcherSelvania",
+    "author": "AloneDayZ-French",
+    "url": "https://dl.alonedayz.com/",
     "engines": {
         "node": "^18.x.x"
     },
@@ -34,6 +34,6 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/luuxis/Selvania-Launcher.git"
+        "url": "git+https://github.com/AloneDayZ-French/AloneDayZ-RP.git"
     }
 }
